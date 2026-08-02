@@ -8,24 +8,45 @@ exports.GetDiaryEntries = async (req, res) => {
   try {
     const user = req.user;
 
-    // 1. Check if user exists from middleware
     if (!user) {
       return res.status(401).json({
         message: "No user found from middleware",
       });
     }
 
-    // 2. Fetch entries for this user
-    const allEntries = await DiaryEntry.find({ user: user.userId }).sort({ createdAt: -1 });
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 8;
 
-    // 3. Success response (even if no entries)
+    const skip = (page - 1) * limit;
+
+    const totalEntries = await DiaryEntry.countDocuments({
+      user: user.userId,
+    });
+
+    const allEntries = await DiaryEntry.find({
+      user: user.userId,
+    })
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
     return res.status(200).json({
-      message: "Found",
       success: true,
-      data: allEntries || [],
+      message: "Found",
+      data: allEntries,
+
+      pagination: {
+        currentPage: page,
+        totalPages: Math.ceil(totalEntries / limit),
+        totalEntries,
+        limit,
+        hasNextPage: page < Math.ceil(totalEntries / limit),
+        hasPreviousPage: page > 1,
+      },
     });
   } catch (err) {
     console.error(err);
+
     return res.status(500).json({
       message: "Error occur in Getting all entries",
     });
