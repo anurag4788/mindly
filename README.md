@@ -116,14 +116,14 @@ npm run dev
 
 ## 📸 Screenshots
 
-> Add screenshots of your application here.
-
 - Landing Page
 - Login Page
 - Diary List
 - Diary Details
 - AI Summary
 - Create Diary Entry
+
+Uploding Soon
 
 ---
 
