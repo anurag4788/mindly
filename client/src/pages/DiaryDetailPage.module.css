@@ -3,24 +3,37 @@
 .notebook {
   max-width: 1200px;
   margin: 40px auto;
-  padding: 24px 0 60px;
+  padding: 24px 16px 60px;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   color: #1a1a1a;
   position: relative;
+  overflow-x: hidden;
+  box-sizing: border-box;
+  width: 100%;
 }
 
-/* Back button: round, top-left corner, separate from page */
-.backButton {
-  position: absolute;
-  top: -18px;
-  left: -18px;
+/* Top bar holds the back button in normal flow (no overlap/clipping) */
+.topBar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
 
+.breadcrumb {
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #666;
+}
+
+.backButton {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-
   width: 44px;
   height: 44px;
+  flex: 0 0 auto;
 
   border: 1px solid #e0e0e0;
   background: #f7f7f7;
@@ -38,95 +51,135 @@
   transform: translateY(-1px);
 }
 
-/* Two-page layout with black border around entire structure */
-.pages {
-  display: flex;
-  gap: 12px;
-  align-items: stretch;
-  margin-top: 10px;
+.backButton:focus-visible,
+.summaryButton:focus-visible {
+  outline: 2px solid #6a5af9;
+  outline-offset: 2px;
+}
 
-  /* Black border around both pages */
+/* Two-page layout */
+.pages {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 0;
+  align-items: start;
+
   border: 2px solid #000000;
   border-radius: 12px;
   padding: 12px;
   background: #ffffff;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.08);
+  box-sizing: border-box;
+  width: 100%;
 }
 
-/* Individual "page" styling */
+/* Center binding between the two pages */
+.pages > .page + .page {
+  border-left: 1px solid #eaeaea;
+  margin-left: 12px;
+  padding-left: 26px;
+}
+
+/* Individual "page" — normal document flow, no inner scroll box,
+   so the whole page scrolls naturally on any device */
 .page {
-  flex: 1;
   min-width: 0;
-  padding: 24px 20px 28px;
+  padding: 24px 20px 24px;
   background: #ffffff;
   border-radius: 10px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
-  border: 1px solid #eaeaea;
 
-  max-height: 80vh;
-  overflow-y: auto;
   box-sizing: border-box;
 
   position: relative;
-
   display: flex;
   flex-direction: column;
+  gap: 4px;
 }
 
-/* Subtle "binding" line on the left edge of each page */
-.page::before {
-  content: '';
-  position: absolute;
-  top: 16px;
-  bottom: 16px;
-  left: 0;
-  width: 3px;
-  background: linear-gradient(to bottom, #e0e0e0, #f5f5f5, #e0e0e0);
-  border-radius: 2px;
+.pageHead {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: #ffffff;
+  padding: 4px 0 12px;
+  margin-bottom: 4px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.pageLabel {
+  display: inline-block;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #888;
+  margin-bottom: 6px;
+}
+
+.pageBody {
+  flex: 1;
+  min-height: 0;
 }
 
 /* Title */
 .title {
-  font-size: 26px;
-  line-height: 1.25;
+  font-size: 28px;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
   margin: 0 0 8px;
   color: #111;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
-/* Meta row (date + mood) */
+/* Meta row */
 .meta {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin: 8px 0 16px;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 6px 0 0;
   font-size: 13px;
   color: #666;
 }
 
+.dot { color: #c0c0c0; }
+
 .mood {
   display: inline-block;
-  padding: 4px 8px;
+  padding: 4px 10px;
   border-radius: 999px;
   background: #f0f0f0;
   color: #444;
   font-size: 12px;
+  text-transform: capitalize;
 }
 
 /* Diary content */
 .content {
-  margin-top: 12px;
-  line-height: 1.7;
+  margin-top: 16px;
+  line-height: 1.8;
   white-space: pre-wrap;
-  font-size: 15px;
+  font-size: 16px;
   color: #222;
+  max-width: 68ch;
 
   word-wrap: break-word;
-  overflow-wrap: break-word;
-  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.content::first-letter {
+  font-size: 40px;
+  line-height: 1;
+  float: left;
+  padding: 4px 8px 0 0;
+  color: #111;
 }
 
 /* Tags */
 .tags {
-  margin-top: 18px;
+  margin-top: 22px;
+  padding-top: 14px;
+  border-top: 1px dashed #e6e6e6;
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
@@ -142,56 +195,88 @@
   border: 1px solid #e6e6e6;
 }
 
-/* Right page: AI Summary title */
+/* Right page */
 .summaryTitle {
   font-size: 22px;
   line-height: 1.25;
-  margin: 0 0 12px;
+  margin: 0;
   color: #111;
 }
 
-/* Wrapper for summary/no-summary content so it can grow, but button stays at bottom */
 .summaryContent {
   flex: 1;
   min-height: 0;
+  padding-top: 14px;
 }
 
-/* Summary box (when summary exists) */
 .summaryBox {
-  padding: 14px 14px 10px;
+  padding: 16px;
   background: #f8f9ff;
   border: 1px solid #e6e9ff;
   border-radius: 10px;
+  border-left: 3px solid #6a5af9;
 }
 
 .summaryBox p {
   margin: 0;
-  font-size: 14px;
+  font-size: 15px;
   color: #222;
-  line-height: 1.6;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
 }
 
-/* No summary placeholder */
+/* Empty state */
 .noSummary {
-  padding: 16px;
+  padding: 28px 18px;
   background: #fafafa;
   border: 1px dashed #d0d0d0;
   border-radius: 10px;
-  font-size: 13px;
-  color: #555;
   text-align: center;
-  line-height: 1.5;
+  color: #555;
 }
 
-/* AI Summary button: always at bottom-left of right page */
-.summaryButton {
-  align-self: flex-start;
-  justify-self: flex-start;
-
+.noSummaryIcon {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  margin-bottom: 10px;
+  border-radius: 50%;
+  background: #f8f9ff;
+  border: 1px solid #e6e9ff;
+  color: #6a5af9;
+  font-size: 18px;
+}
+
+.noSummaryTitle {
+  margin: 0 0 4px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.noSummaryText {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #555;
+}
+
+/* Action row pinned to the bottom of the right page */
+.pageActions {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid #f0f0f0;
+  display: flex;
+}
+
+.summaryButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   gap: 8px;
-  padding: 10px 16px;
+  padding: 10px 18px;
   border: none;
   border-radius: 10px;
   background: linear-gradient(135deg, #6a5af9, #7c6efc);
@@ -201,8 +286,6 @@
   cursor: pointer;
   box-shadow: 0 6px 16px rgba(106, 90, 249, 0.25);
   transition: transform 0.1s ease, box-shadow 0.15s ease, opacity 0.15s ease;
-
-  margin-top: 14px;
 }
 
 .summaryButton:hover:not(:disabled) {
@@ -215,21 +298,172 @@
   cursor: not-allowed;
 }
 
-/* Responsive: stack pages on small screens */
-@media (max-width: 850px) {
+/* Loading / states */
+.state {
+  max-width: 1200px;
+  margin: 60px auto;
+  text-align: center;
+  color: #666;
+}
+
+.skeleton {
+  height: 14px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #f4f4f4, #eaeaea, #f4f4f4);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s linear infinite;
+  margin-bottom: 10px;
+}
+
+.skeletonTitle { height: 26px; width: 60%; margin-bottom: 18px; }
+.skeletonShort { width: 45%; }
+
+@keyframes shimmer {
+  from { background-position: 200% 0; }
+  to { background-position: -200% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton { animation: none; }
+  .backButton, .summaryButton { transition: none; }
+}
+
+/* ============ Responsive ============ */
+
+/* Large tablets / small laptops */
+@media (max-width: 1024px) {
+  .notebook {
+    padding: 22px 14px 50px;
+  }
+
   .pages {
-    flex-direction: column;
+    grid-template-columns: 1.1fr 0.9fr;
+  }
+}
+
+/* Tablets: stack pages into one column */
+@media (max-width: 850px) {
+  .notebook { margin: 20px auto; }
+
+  .pages {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .pages > .page + .page {
+    border-left: none;
+    border-top: 1px solid #eaeaea;
+    margin-left: 0;
+    padding-left: 20px;
+    padding-top: 20px;
+  }
+
+  .pageHead { position: static; }
+  .title { font-size: 24px; }
+  .content { font-size: 15px; }
+  .backButton { width: 40px; height: 40px; font-size: 16px; }
+}
+
+/* Small tablets / large phones */
+@media (max-width: 600px) {
+  .notebook {
+    margin: 16px auto;
+    padding: 16px 10px 40px;
+  }
+
+  .pages {
+    padding: 10px;
+    border-radius: 10px;
   }
 
   .page {
-    max-height: 70vh;
+    padding: 18px 14px 20px;
   }
 
-  .backButton {
-    top: -12px;
-    left: -12px;
-    width: 40px;
-    height: 40px;
-    font-size: 16px;
+  .pages > .page + .page {
+    padding-left: 14px;
+    padding-top: 18px;
   }
+
+  .title { font-size: 21px; }
+  .summaryTitle { font-size: 19px; }
+
+  .meta {
+    font-size: 12px;
+    gap: 8px;
+  }
+
+  .content {
+    font-size: 14.5px;
+    max-width: 100%;
+  }
+
+  .content::first-letter {
+    font-size: 32px;
+    padding: 2px 6px 0 0;
+  }
+
+  .tags { margin-top: 18px; gap: 6px; }
+  .tag { font-size: 11px; padding: 3px 9px; }
+
+  .summaryBox { padding: 14px; }
+  .summaryBox p { font-size: 14px; }
+
+  .noSummary { padding: 22px 14px; }
+
+  .pageActions { margin-top: 14px; padding-top: 12px; }
+
+  .summaryButton {
+    width: 100%;
+    padding: 12px 16px;
+  }
+}
+
+/* Small phones */
+@media (max-width: 400px) {
+  .notebook {
+    padding: 12px 8px 32px;
+  }
+
+  .topBar { gap: 8px; margin-bottom: 12px; }
+  .breadcrumb { font-size: 11px; }
+  .backButton { width: 36px; height: 36px; font-size: 15px; }
+
+  .pages {
+    padding: 8px;
+  }
+
+  .page {
+    padding: 14px 10px 16px;
+  }
+
+  .pages > .page + .page {
+    padding-left: 10px;
+    padding-top: 14px;
+  }
+
+  .title { font-size: 19px; }
+  .summaryTitle { font-size: 17px; }
+  .pageLabel { font-size: 10px; }
+
+  .meta {
+    font-size: 11px;
+    gap: 6px;
+  }
+
+  .mood { font-size: 11px; padding: 3px 8px; }
+
+  .content {
+    font-size: 14px;
+    line-height: 1.65;
+  }
+
+  .content::first-letter {
+    font-size: 28px;
+  }
+
+  .noSummaryText { font-size: 12px; }
+  .noSummaryTitle { font-size: 13px; }
+
+  .summaryButton { font-size: 13px; }
 }
