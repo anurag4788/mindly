@@ -1,4 +1,5 @@
 # Dependencies
+node_modules/
 client/node_modules/
 server/node_modules/
 
@@ -9,6 +10,9 @@ client/dist-ssr/
 server/dist/
 
 # Environment variables
+.env
+.env.*
+!.env.example
 client/.env*
 server/.env*
 *.local
