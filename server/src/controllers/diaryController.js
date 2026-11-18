@@ -23,6 +23,16 @@ exports.GetDiaryEntries = async (req, res) => {
       user: user.userId,
     });
 
+    //new modifcations for last week entries value 
+    const lastWeek = new Date();
+
+    lastWeek.setDate(lastWeek.getDate() - 7);
+
+    const weeklyEntries = await DiaryEntry.countDocuments({
+      user: user.userId,
+      createdAt: { $gte: lastWeek },
+    });
+
     const allEntries = await DiaryEntry.find({
       user: user.userId,
     })
@@ -34,6 +44,9 @@ exports.GetDiaryEntries = async (req, res) => {
       success: true,
       message: "Found",
       data: allEntries,
+      stats: {
+        thisWeek: weeklyEntries,
+      },
 
       pagination: {
         currentPage: page,
@@ -254,10 +267,10 @@ exports.GenerateSummary = async (req, res) => {
       typeof result?.text === "string"
         ? result.text
         : typeof result?.response?.text === "string"
-        ? result.response.text
-        : typeof result?.response?.text === "function"
-        ? result.response.text()
-        : "";
+          ? result.response.text
+          : typeof result?.response?.text === "function"
+            ? result.response.text()
+            : "";
 
     if (!summary) {
       return res.status(500).json({
