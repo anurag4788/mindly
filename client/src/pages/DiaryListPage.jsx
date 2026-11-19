@@ -15,6 +15,7 @@ export default function DiaryListPage() {
   const [page, setPage] = useState(1)
 
   const [loading, setLoading] = useState(false)
+  const [weeklyEntries, setWeeklyEntries] = useState(0)
 
   const [pagination, setPagination] = useState({
     currentPage: 1,
@@ -34,6 +35,7 @@ export default function DiaryListPage() {
 
       setDiaries(response.data.data || [])
       setPagination(response.data.pagination)
+      setWeeklyEntries(response.data.stats.thisWeek)
     } catch (err) {
       console.log(err)
     } finally {
@@ -114,7 +116,7 @@ export default function DiaryListPage() {
 
       <div className={styles.statCard}>
         <span>This Week</span>
-        <strong>4</strong>
+        <strong>{weeklyEntries}</strong>
       </div>
 
       <div className={styles.statCard}>
